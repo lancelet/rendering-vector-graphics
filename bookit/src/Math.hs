@@ -2,6 +2,8 @@
 
 module Math where
 
+{-
+
 import Data.Strict.Maybe (Maybe (Just, Nothing))
 import Data.Text (Text)
 import qualified Data.Text as Text
@@ -184,3 +186,5 @@ coordToTex (Coord terms) =
         " , "
         (Vector.toList (Vector.map (unTexMath . termToTex) terms))
       <> " \\right)"
+
+-}

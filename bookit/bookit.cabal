@@ -38,15 +38,27 @@ executable bookit
   hs-source-dirs:   app
   default-language: Haskell2010
 
+test-suite bookit-test
+  import: base
+  type: exitcode-stdio-1.0
+  hs-source-dirs: test
+  main-is: Test.hs
+  build-depends:
+      bookit
+    , hedgehog
+
+
 library
   import:          base, ghc-options
   hs-source-dirs:  src
+  other-modules:
+    Bookit.Sexp.Parse
+    Bookit.Sexp.Types
+
   exposed-modules:
     Bookit.Math
-    Bookit.Sexp
     Doc
     Math
-    Sexp
 
   build-depends:
     , megaparsec
