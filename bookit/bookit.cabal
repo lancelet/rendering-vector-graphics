@@ -1,0 +1,56 @@
+cabal-version:      2.4
+name:               bookit
+version:            0.1.0.0
+synopsis:           Produce HTML from markup.
+description:
+  This is a document processor for the "Rendering Vector Graphics" project.
+
+license:            BSD-3-Clause
+author:             Jonathan Merritt
+maintainer:         j.s.merritt@gmail.com
+copyright:          Copyright (C) Jonathan Merritt 2021
+category:           Documentation
+
+source-repository head
+  type:     git
+  location: https://github.com/lancelet/rendering-vector-graphics.git
+
+common base
+  default-language: Haskell2010
+  build-depends:    base ^>=4.14.1.0
+
+common ghc-options
+  ghc-options:
+    -Wall -Wcompat -Wincomplete-record-updates
+    -Wincomplete-uni-patterns -Wredundant-constraints
+
+extra-source-files: CHANGELOG.md
+
+executable bookit
+  import:           base, ghc-options
+  main-is:          Main.hs
+
+  -- Modules included in this executable, other than Main.
+  -- other-modules:
+
+  -- LANGUAGE extensions used by modules in this package.
+  -- other-extensions:
+  hs-source-dirs:   app
+  default-language: Haskell2010
+
+library
+  import:          base, ghc-options
+  hs-source-dirs:  src
+  exposed-modules:
+    Bookit.Sexp
+    Doc
+    Math
+    Sexp
+
+  build-depends:
+    , megaparsec
+    , mtl
+    , strict
+    , text
+    , text-show
+    , vector
