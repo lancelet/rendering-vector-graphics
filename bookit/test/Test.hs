@@ -12,7 +12,6 @@ runHedgehogTests = do
   mapM_ Hedgehog.checkParallel hedgehogTests
   putStrLn "---- Completed Hedgehog Tests ----"
 
-
 hedgehogTests :: [Hedgehog.Group]
 hedgehogTests =
   []
