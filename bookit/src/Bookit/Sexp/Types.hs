@@ -18,7 +18,7 @@ data Atom
 
 newtype Sym = Sym {unSym :: Text}
 
-newtype Str = Str {unStr :: Text}
+newtype Str = Str {unStr :: Text} deriving (Show)
 
 newtype Row = Row {unRow :: Word32}
 

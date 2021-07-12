@@ -43,8 +43,11 @@ test-suite bookit-test
   type:           exitcode-stdio-1.0
   hs-source-dirs: test
   main-is:        Test.hs
+  other-modules:
+    Bookit.Sexp.ParseTest
   build-depends:
     , bookit
+    , doctest
     , hedgehog
 
 library

@@ -69,6 +69,22 @@ sym = do
   let txt = Text.cons c cs
   pure . Sym $ txt
 
+-- | Parse a 'Str' string with escaping characters
+--
+-- This can parse a regular string:
+--
+-- >>> MP.parse str "" "\"hello\""
+-- Right (Str {unStr = "hello"})
+--
+-- Empty strings are valid:
+--
+-- >>> MP.parse str "" "\"\""
+-- Right (Str {unStr = ""})
+--
+-- Strings with correctly-escaped characters are OK:
+--
+-- >>> MP.parse str "" "\"Hello\\n\\t\\\"world\\\"\""
+-- Right (Str {unStr = "Hello\n\t\"world\""})
 str :: Parser Str
 str = do
   _ <- MP.single '"'
@@ -124,3 +140,6 @@ inCharRange minC maxC c = (c' >= minC') && (c' <= maxC')
     c' = ord c
     minC' = ord minC
     maxC' = ord maxC
+
+-- $setup
+-- >>> :set -XOverloadedStrings

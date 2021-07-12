@@ -1,1 +1,2 @@
 packages: bookit/
+write-ghc-environment-files: always
