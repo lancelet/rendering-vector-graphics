@@ -1,13 +1,17 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE OverloadedStrings #-}
 
+module Bookit.Sexp where
+
+{-
+
 module Bookit.Sexp
   ( -- * Types
 
     -- ** Sexp types
     Sexp,
-    Sym (Sym),
-    Str (Str),
+    Sym (Sym, unSym),
+    Str (Str, unStr),
 
     -- ** Evaluation types
     FailMsg (FailMsg),
@@ -20,8 +24,7 @@ module Bookit.Sexp
     pprSexp,
 
     -- ** Decomposition
-    fail,
-    prependFail,
+    setName,
     runMatcher,
     expr,
     atom,
@@ -34,7 +37,8 @@ module Bookit.Sexp
   )
 where
 
-import Control.Monad.State.Strict (StateT)
+import Control.Monad (MonadPlus, fail)
+import Control.Monad.State.Strict (StateT, lift)
 import qualified Control.Monad.State.Strict as State
 import Data.Char (ord)
 import Data.Functor (($>))
@@ -45,6 +49,7 @@ import Data.Void (Void)
 import Text.Megaparsec ((<|>))
 import qualified Text.Megaparsec as MP
 import Prelude hiding (fail)
+import Control.Applicative (Alternative)
 
 -------------------------------------------------------------------------------
 -- Types
@@ -98,39 +103,56 @@ pprStr s = "\"" <> (escapeStr . unStr $ s) <> "\""
 -- Evaluation and Decomposition
 -------------------------------------------------------------------------------
 
-newtype FailMsg = FailMsg Text deriving (Show)
+data Attempt =
+  Attempt {
+    attemptName :: !Text,
+    attemptFailReason :: !Text
+  }
 
-instance Semigroup FailMsg where
-  (FailMsg l) <> (FailMsg r) = FailMsg (l <> r)
+newtype MatcherNames = MatcherNames [Text] deriving (Show)
+
+instance Semigroup MatcherNames where
+  (MatcherNames ls) <> (MatcherNames rs) = MatcherNames (ls <> rs)
 
 data Result a
   = Ok a
-  | Fail !FailMsg
+  | Fail [Attempt]
   deriving (Show)
+
+instance MonadFail Result where
+  fail msg = Fail (MatcherNames []) (FailMsg . Text.pack $ msg)
+
+failTxt :: Text -> Result a
+failTxt txt = Fail (MatcherNames []) (FailMsg txt)
+
+instance Alternative Result where
+  empty = Fail (MatcherNames []) (FailMsg "no results")
+  Ok x <|> _ = Ok x
+  Fail _ _ <|> Ok x = Ok x
+  Fail nsl l <|> Fail nsr r = Fail (nsl <> nsr) (l <> r)
+
+instance MonadPlus Result
 
 instance Functor Result where
   fmap f (Ok x) = Ok (f x)
-  fmap _ (Fail msg) = Fail msg
+  fmap _ (Fail name msg) = Fail name msg
 
 instance Applicative Result where
   pure = Ok
   Ok f <*> Ok x = Ok (f x)
-  Ok _ <*> Fail msg = Fail msg
-  Fail msg <*> _ = Fail msg
+  Ok _ <*> Fail name msg = Fail name msg
+  Fail name msg <*> _ = Fail name msg
 
 instance Monad Result where
   Ok x >>= f = f x
-  Fail msg >>= _ = Fail msg
+  Fail name msg >>= _ = Fail name msg
 
-fail :: Text -> Matcher a
-fail = State.lift . Fail . FailMsg
-
-prependFail :: Text -> Matcher a -> Matcher a
-prependFail txt = State.mapStateT f
+setName :: Text -> Matcher a -> Matcher a
+setName name = State.mapStateT f
   where
     f :: Result (a, ExprStack) -> Result (a, ExprStack)
     f (Ok pair) = Ok pair
-    f (Fail msg) = Fail (FailMsg txt <> msg)
+    f (Fail (MatcherNames ns) msg) = Fail (MatcherNames (name : ns)) msg
 
 newtype ExprStack = ExprStack {unExprStack :: [Expr]}
 
@@ -147,7 +169,7 @@ runMatcher matcher (Sexp es) = do
   pair <- State.runStateT matcher (ExprStack es)
   if null . unExprStack . snd $ pair
     then pure . fst $ pair
-    else Fail . FailMsg $ "did not consume all elements"
+    else Fail (MatcherNames []) (FailMsg "did not consume all elements")
 
 expr :: Matcher Expr
 expr = do
@@ -159,21 +181,21 @@ expr = do
       pure e
 
 atom :: Matcher Atom
-atom = prependFail "no atom: " $ do
+atom = setName "atom" $ do
   e <- expr
   case e of
     ExprAtom a -> pure a
     _ -> fail "found an expression, but not an atom"
 
 sym :: Matcher Sym
-sym = prependFail "no symbol: " $ do
+sym = setName "symbol" $ do
   a <- atom
   case a of
     AtomSym s -> pure s
     _ -> fail "found an atom, but not a symbol"
 
 str :: Matcher Str
-str = prependFail "no string: " $ do
+str = setName "string" $ do
   a <- atom
   case a of
     AtomStr s -> pure s
@@ -181,22 +203,24 @@ str = prependFail "no string: " $ do
 
 matchSym :: Sym -> Matcher Sym
 matchSym expected =
-  prependFail ("could not match symbol " <> unSym expected <> ": ") $
+  setName (unSym expected)
+  $
     do
       s <- sym
       if s == expected
         then pure s
-        else fail $ "instead found symbol " <> unSym s
+        else lift . failTxt $
+          "expected to find symbol " <> unSym expected <> " but instead found symbol " <> unSym s
 
 -------------------------------------------------------------------------------
 -- Parsing
 -------------------------------------------------------------------------------
 
-textToSexp :: Maybe FilePath -> Text -> Either Text Sexp
+textToSexp :: Maybe FilePath -> Text -> Either FailMsg Sexp
 textToSexp mFilePath txt =
   case MP.parse parseSexp fp txt of
     Right x -> Right x
-    Left peb -> Left (Text.pack . MP.errorBundlePretty $ peb)
+    Left peb -> Left (FailMsg . Text.pack . MP.errorBundlePretty $ peb)
   where
     fp :: String
     fp = fromMaybe "(unknown)" mFilePath
@@ -306,3 +330,5 @@ isInCharRange minChar maxChar c = (c' >= min') && (c' <= max')
     c' = ord c
     min' = ord minChar
     max' = ord maxChar
+
+-}
