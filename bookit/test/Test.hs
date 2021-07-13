@@ -1,7 +1,7 @@
 module Main (main) where
 
-import qualified Hedgehog
 import qualified Bookit.Sexp.ParseTest (tests)
+import qualified Hedgehog
 import qualified Test.DocTest
 
 main :: IO ()
@@ -23,13 +23,14 @@ runDocTests = do
 
 hedgehogTests :: [Hedgehog.Group]
 hedgehogTests =
-  [
-    Bookit.Sexp.ParseTest.tests
+  [ Bookit.Sexp.ParseTest.tests
   ]
 
 docTests :: IO ()
 docTests =
   Test.DocTest.doctest
-  [ "-isrc"
-  , "src/Bookit/Sexp/Parse.hs"
-  ]
+    [ "-isrc",
+      "src/Bookit/Sexp/Char.hs",
+      "src/Bookit/Sexp/Ppr.hs",
+      "src/Bookit/Sexp/Types.hs"
+    ]
