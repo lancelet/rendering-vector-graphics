@@ -47,20 +47,20 @@ sexp :: Parser Sexp
 sexp = do
   _ <- MP.single '('
   _ <- MP.optional ws
-  es <- (pos expr) `MP.sepBy` ws
+  es <- pos expr `MP.sepBy` ws
   _ <- MP.optional ws
   _ <- MP.single ')'
   pure . Sexp $ es
 
 expr :: Parser Expr
 expr =
-  (ExprAtom <$> pos atom)
-    <|> (ExprSexp <$> pos sexp)
+  (ExprAtom <$> atom)
+    <|> (ExprSexp <$> sexp)
 
 atom :: Parser Atom
 atom =
-  (AtomSym <$> pos sym)
-    <|> (AtomStr <$> pos str)
+  (AtomSym <$> sym)
+    <|> (AtomStr <$> str)
 
 sym :: Parser Sym
 sym = do
@@ -93,7 +93,7 @@ str = do
   pure . Str . mconcat $ ss
   where
     regTxt :: Parser Text
-    regTxt = MP.takeWhile1P (Just "regular string character") isRegChar
+    regTxt = MP.takeWhile1P (Just "non-escaped string character") isRegChar
 
     escTxt :: Parser Text
     escTxt =

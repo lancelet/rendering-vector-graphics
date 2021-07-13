@@ -1,0 +1,55 @@
+|(h1 "Shadow cast by a line segment into a rectangle")|
+
+|(h2 "Mathematical Background")
+
+The line segment will be defined by end points:
+
+|(math
+  (define p (vector "p") "left-hand end of the line segment")
+  (define px (scalar "p" "x")
+    "x-coordinate of the left-hand end of the line segment")
+  (define py (scalar "p" "y")
+    "y-coordinate of the left-hand end of the line segment")
+  (define q (vector "q") "right-hand end of the line segment")
+  (define qx (scalar "q" "x")
+    "x-coordinate of the right-hand end of the line segment")
+  (define qy (scalar "q" "y")
+    "y-coordinate of the right-hand end of the line segment")
+  (equals p (coord px py))
+  (equals q (coord qx qy))
+)
+
+Such that |(math (lte px qx)). If |(math (eq px qx)) then the line segment has
+no projected area and either be discarded or proceed through the remainder of
+the processing described below. The rectangle is aligned with Cartesian axes,
+extending from
+|(math
+  (define u0 (scalar "u" "0") "minimum x-coordinate of rectangle")
+  u0
+)
+to
+|(math
+  (define u1 (scalar "u" "1") "maximum x-coordinate of rectangle")
+  u1
+)
+along the |(math (scalar "x")) axis, and from
+|(math
+  (define v0 (scalar "v" "0") "minimum y-coordinate of rectangle")
+  v0
+)
+to
+|(math
+  (define v1 (scalar "v" "1") "maximum y-coordinate of rectangle")
+  v1
+)
+along the |(math (scalar "y")) axis.
+
+We also define the gradient of the line
+|(math
+  (define m (scalar "m") "gradient of the line")
+  m
+):
+
+|(math
+  (eq m (/ (- qy py) (- qx px)))
+)
