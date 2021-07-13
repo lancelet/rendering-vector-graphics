@@ -24,7 +24,6 @@ import qualified Data.Text as Text
 --
 -- Example:
 --
--- >>> :set -XOverloadedStrings
 -- >>> let h1 = SexpAtom () (AtomSym "h1")
 -- >>> let ge = SexpAtom () (AtomStr "Great Expectations")
 -- >>> let example = SexpList () [ h1, ge ]
@@ -47,3 +46,7 @@ sym = unSym
 
 str :: Str -> Text
 str s = "\"" <> (Char.escapeStr . unStr $ s) <> "\""
+
+-- $setup
+--
+-- >>> :set -XOverloadedStrings

@@ -16,7 +16,6 @@
 --
 -- could be encoded as an @'Sexp' ()@ as:
 --
--- >>> :set -XOverloadedStrings
 -- >>> let h1 = SexpAtom () (AtomSym "h1")
 -- >>> let ge = SexpAtom () (AtomStr "Great Expectations")
 -- >>> let example = SexpList () [ h1, ge ]
@@ -91,3 +90,7 @@ data SrcPos = SrcPos
     col :: !Word32
   }
   deriving (Eq, Show)
+
+-- $setup
+--
+-- >>> :set -XOverloadedStrings

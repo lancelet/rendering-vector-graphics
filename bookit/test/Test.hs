@@ -31,6 +31,7 @@ docTests =
   Test.DocTest.doctest
     [ "-isrc",
       "src/Bookit/Sexp/Char.hs",
+      "src/Bookit/Sexp/Parse.hs",
       "src/Bookit/Sexp/Ppr.hs",
       "src/Bookit/Sexp/Types.hs"
     ]

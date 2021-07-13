@@ -10,6 +10,7 @@ author:             Jonathan Merritt
 maintainer:         j.s.merritt@gmail.com
 copyright:          Copyright (C) Jonathan Merritt 2021
 category:           Documentation
+extra-source-files: CHANGELOG.md
 
 source-repository head
   type:     git
@@ -23,8 +24,6 @@ common ghc-options
   ghc-options:
     -Wall -Wcompat -Wincomplete-record-updates
     -Wincomplete-uni-patterns -Wredundant-constraints
-
-extra-source-files: CHANGELOG.md
 
 executable bookit
   import:           base, ghc-options

@@ -10,12 +10,14 @@ module Bookit.Sexp.Char
 
     -- ** Character classes
     isSym,
+    isStrPlain,
     isAlphaNum,
     isDigit,
     isAlpha,
     isAlphaUpper,
     isAlphaLower,
     inCharRange,
+    isWS,
   )
 where
 
@@ -72,6 +74,11 @@ isSym c =
    in isAlphaNum c || Set.member c extras
 {-# INLINEABLE isSym #-}
 
+-- | Check if a character is a plain string character.
+isStrPlain :: Char -> Bool
+isStrPlain c = (c /= '"') && (c /= '\\')
+{-# INLINEABLE isStrPlain #-}
+
 -- | Check if a character is an alphanumeric character.
 isAlphaNum :: Char -> Bool
 isAlphaNum c = isDigit c || isAlpha c
@@ -121,3 +128,12 @@ inCharRange minC maxC c =
       maxI = ord maxC
    in assert (minI <= maxI) $ (x >= minI) && (x <= maxI)
 {-# INLINEABLE inCharRange #-}
+
+-- | Check if a character is whitespace.
+isWS :: Char -> Bool
+isWS c = (c == ' ') || (c == '\t') || (c == '\n')
+{-# INLINEABLE isWS #-}
+
+-- $setup
+--
+-- >>> :set -XOverloadedStrings
