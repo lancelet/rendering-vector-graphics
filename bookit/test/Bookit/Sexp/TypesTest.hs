@@ -15,7 +15,11 @@ import Bookit.Sexp
     Str (Str),
     Sym (Sym),
   )
-import Bookit.Sexp.CharTest (genCharStrPlain, genCharSym, genTextStringEscaped)
+import Bookit.Sexp.CharTest
+  ( genCharStrPlain,
+    genCharSym,
+    genTextStringEscapable,
+  )
 import Data.Text (Text)
 import qualified Data.Text as Text
 import Hedgehog (Gen, Range)
@@ -28,7 +32,7 @@ import qualified Hedgehog.Range as Range
 
 -- | Generates parenthetical S-expressions.
 genSexp :: Gen (Sexp ())
-genSexp = SexpList () <$> Gen.list (Range.linear 1 10) genAtomOrSexp
+genSexp = SexpList () <$> Gen.list (Range.linear 1 50) genAtomOrSexp
 
 -- | Generates atomic S-expressions or parenthetical ones.
 genAtomOrSexp :: Gen (Sexp ())
@@ -57,7 +61,7 @@ genStr = Str <$> genStrText
     genTextChunk :: Gen Text
     genTextChunk =
       Gen.frequency
-        [ (1, genTextStringEscaped),
+        [ (1, genTextStringEscapable),
           (5, genPlainChunk)
         ]
 

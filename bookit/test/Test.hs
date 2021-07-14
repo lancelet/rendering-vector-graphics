@@ -13,7 +13,8 @@ main = do
 runHedgehogTests :: IO ()
 runHedgehogTests = do
   putStrLn "\n---- Running Hedgehog Tests ----"
-  mapM_ Hedgehog.checkParallel hedgehogTests
+  mapM_ Hedgehog.checkSequential hedgehogTests
+  -- mapM_ Hedgehog.checkParallel hedgehogTests
   putStrLn "---- Completed Hedgehog Tests ----"
 
 runDocTests :: IO ()

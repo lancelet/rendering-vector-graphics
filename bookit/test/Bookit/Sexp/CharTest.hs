@@ -6,7 +6,7 @@ module Bookit.Sexp.CharTest
     tests,
 
     -- * Generators
-    genTextStringEscaped,
+    genTextStringEscapable,
     genCharSym,
     genCharStrPlain,
     genCharAlphaNum,
@@ -96,14 +96,13 @@ checkCharClass gen p = property $ do
 -- Generators for character classes
 -------------------------------------------------------------------------------
 
-genTextStringEscaped :: Gen Text
-genTextStringEscaped =
+genTextStringEscapable :: Gen Text
+genTextStringEscapable =
   Gen.element
-    [ "\\n",
-      "\\t",
-      "\\\\",
-      "\\\"",
-      "\\|"
+    [ "\n",
+      "\t",
+      "\\",
+      "\""
     ]
 
 genCharSym :: Gen Char

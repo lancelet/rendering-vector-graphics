@@ -62,7 +62,6 @@ stringEscapedChar c =
     '\t' -> Just "\\t"
     '\\' -> Just "\\\\"
     '"' -> Just "\\\""
-    '|' -> Just "\\|"
     _ -> Nothing
 {-# INLINEABLE stringEscapedChar #-}
 

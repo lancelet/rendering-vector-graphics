@@ -3,6 +3,9 @@
 -- |
 module Bookit.Sexp.Ppr
   ( pprSimple,
+    atom,
+    str,
+    sym,
   )
 where
 

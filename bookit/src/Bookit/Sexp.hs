@@ -14,6 +14,9 @@ module Bookit.Sexp
 
     -- * Functions
 
+    -- ** Construction
+    Types.mkLoc,
+
     -- ** Parsing
     Parse.sexp,
 

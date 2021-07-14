@@ -31,6 +31,9 @@ module Bookit.Sexp.Types
     -- ** Source locations
     Loc (Loc),
     SrcPos (SrcPos, row, col),
+
+    -- * Functions
+    mkLoc,
   )
 where
 
@@ -90,6 +93,9 @@ data SrcPos = SrcPos
     col :: !Word32
   }
   deriving (Eq, Show)
+
+mkLoc :: Word32 -> Word32 -> Word32 -> Word32 -> Loc
+mkLoc sr sc er ec = Loc (SrcPos sr sc) (SrcPos er ec)
 
 -- $setup
 --

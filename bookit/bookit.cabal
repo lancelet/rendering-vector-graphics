@@ -45,6 +45,7 @@ test-suite bookit-test
     , bookit
     , doctest
     , hedgehog
+    , megaparsec
     , text
 
 library

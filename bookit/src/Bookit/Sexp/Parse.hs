@@ -4,6 +4,9 @@
 module Bookit.Sexp.Parse
   ( -- * Parsers
     sexp,
+    atom,
+    str,
+    sym,
   )
 where
 
@@ -56,9 +59,8 @@ sexp =
       s <- getSrcPos
       es <-
         MP.single '('
-          *> MP.optional ws
-          *> sexpOrAtom `MP.sepBy1` ws
-          <* MP.optional ws
+          *> optWS
+          *> MP.many (sexpOrAtom <* optWS)
           <* MP.single ')'
       e <- getSrcPos
       let loc = Loc s e
@@ -94,7 +96,7 @@ getSrcPos = do
 -- AtomSym (Sym {unSym = "p"})
 --
 -- >>> MP.parseTest atom "\"hello\\nworld\""
--- AtomStr (Str {unStr = "hello\\nworld"})
+-- AtomStr (Str {unStr = "hello\nworld"})
 --
 -- >>> MP.parseTest atom "@"
 -- 1:1:
@@ -119,7 +121,7 @@ atom =
 -- Str {unStr = "string"}
 --
 -- >>> MP.parseTest str "\"We can \\\"quote\\\" content\""
--- Str {unStr = "We can \\\"quote\\\" content"}
+-- Str {unStr = "We can \"quote\" content"}
 --
 -- >>> MP.parseTest str "\"Bad escape: \\@\""
 -- 1:15:
@@ -144,17 +146,20 @@ str =
     strEscaped =
       MP.label "string escaped character" $
         MP.single '\\'
-          *> ( (MP.single 'n' $> "\\n")
-                 <|> (MP.single 't' $> "\\t")
-                 <|> (MP.single '\\' $> "\\\\")
-                 <|> (MP.single '"' $> "\\\"")
-                 <|> (MP.single '|' $> "\\|")
+          *> ( (MP.single 'n' $> "\n")
+                 <|> (MP.single 't' $> "\t")
+                 <|> (MP.single '\\' $> "\\")
+                 <|> (MP.single '"' $> "\"")
+                 <|> (MP.single '|' $> "|")
              )
 
 -- | Parse a symbol.
 --
 -- >>> MP.parseTest sym "h1"
 -- Sym {unSym = "h1"}
+--
+-- >>> MP.parseTest sym "+"
+-- Sym {unSym = "+"}
 --
 -- >>> MP.parseTest sym "@"
 -- 1:1:
@@ -169,6 +174,10 @@ sym = Sym <$> MP.takeWhile1P (Just "symbol") Char.isSym
 -- | Parse whitespace.
 ws :: Parser Text
 ws = MP.takeWhile1P (Just "whitespace") Char.isWS
+
+-- | Parse optional whitespace.
+optWS :: Parser Text
+optWS = MP.takeWhileP (Just "optional whitespace") Char.isWS
 
 -- $setup
 --
