@@ -29,13 +29,14 @@ import Hedgehog
     (===),
   )
 import qualified Hedgehog
+import System.IO (hFlush, stdout)
 import qualified Text.Megaparsec as MP
 
 tests :: Hedgehog.Group
 tests =
   Group
     "Bookit.Sexp.Parse"
-    [ -- ("round-tripping Parse.sexp", prop_trip_sexp), -- TODO: currently broken
+    [ ("round-tripping Parse.sexp", prop_trip_sexp),
       ("round-tripping Parse.atom", prop_trip_atom),
       ("round-tripping Parse.str", prop_trip_str),
       ("round-tripping Parse.sym", prop_trip_sym),
@@ -49,7 +50,7 @@ tests =
 
 prop_trip_sexp :: Property
 prop_trip_sexp = property $ do
-  sexp <- forAll genSexp
+  sexp <- forAll $ genSexp 5
   tripping sexp Ppr.pprSimple (fmap clearLoc <$> MP.parse Parse.sexp "")
 
 prop_trip_atom :: Property

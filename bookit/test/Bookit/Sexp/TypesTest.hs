@@ -31,16 +31,22 @@ import qualified Hedgehog.Range as Range
 -------------------------------------------------------------------------------
 
 -- | Generates parenthetical S-expressions.
-genSexp :: Gen (Sexp ())
-genSexp = SexpList () <$> Gen.list (Range.linear 1 50) genAtomOrSexp
+genSexp :: Int -> Gen (Sexp ())
+genSexp depth =
+  if depth == 0
+    then pure $ SexpList () []
+    else SexpList () <$> Gen.list (Range.linear 1 50) (genAtomOrSexp (depth - 1))
 
 -- | Generates atomic S-expressions or parenthetical ones.
-genAtomOrSexp :: Gen (Sexp ())
-genAtomOrSexp =
-  Gen.frequency
-    [ (3, SexpAtom () <$> genAtom),
-      (1, genSexp)
-    ]
+genAtomOrSexp :: Int -> Gen (Sexp ())
+genAtomOrSexp depth =
+  if depth == 0
+    then pure $ SexpList () []
+    else
+      Gen.frequency
+        [ (3, SexpAtom () <$> genAtom),
+          (1, genSexp (depth - 1))
+        ]
 
 genAtom :: Gen Atom
 genAtom =
