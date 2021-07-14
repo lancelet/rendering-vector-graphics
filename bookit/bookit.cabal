@@ -36,22 +36,28 @@ test-suite bookit-test
   type:           exitcode-stdio-1.0
   hs-source-dirs: test
   main-is:        Test.hs
-  other-modules:  Bookit.Sexp.ParseTest
+  other-modules:
+    Bookit.Sexp.CharTest
+    Bookit.Sexp.ParseTest
+    Bookit.Sexp.TypesTest
+
   build-depends:
     , bookit
     , doctest
     , hedgehog
+    , text
 
 library
   import:          base, ghc-options
   hs-source-dirs:  src
   other-modules:
+  exposed-modules:
+    Bookit.Sexp
     Bookit.Sexp.Char
     Bookit.Sexp.Parse
     Bookit.Sexp.Ppr
     Bookit.Sexp.Types
 
-  exposed-modules: Bookit.Sexp
   build-depends:
     , containers
     , megaparsec
