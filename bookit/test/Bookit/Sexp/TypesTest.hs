@@ -9,16 +9,16 @@ module Bookit.Sexp.TypesTest
   )
 where
 
-import Bookit.Sexp
-  ( Atom (AtomStr, AtomSym),
-    Sexp (SexpAtom, SexpList),
-    Str (Str),
-    Sym (Sym),
-  )
 import Bookit.Sexp.CharTest
   ( genCharStrPlain,
     genCharSym,
     genTextStringEscapable,
+  )
+import Bookit.Sexp.Types
+  ( Atom (AtomStr, AtomSym),
+    Sexp (SexpAtom, SexpList),
+    Str (Str),
+    Sym (Sym),
   )
 import Data.Text (Text)
 import qualified Data.Text as Text
