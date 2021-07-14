@@ -33,6 +33,7 @@ module Bookit.Sexp.Types
     SrcPos (SrcPos, row, col),
 
     -- * Functions
+    loc,
     mkLoc,
   )
 where
@@ -62,15 +63,22 @@ data Atom
     AtomSym !Sym
   | -- | String atom.
     AtomStr !Str
-  deriving (Eq, Show)
+  deriving (Eq, Ord, Show)
 
 -- | Symbol in an S-expression.
 newtype Sym = Sym {unSym :: Text}
-  deriving (Eq, Show, IsString)
+  deriving (Eq, Ord, Show, IsString)
 
 -- | String in an S-expression.
 newtype Str = Str {unStr :: Text}
-  deriving (Eq, Show, IsString)
+  deriving (Eq, Ord, Show, IsString)
+
+-- | Get the location of an @'Sexp' 'Loc'@.
+loc :: Sexp Loc -> Loc
+loc s =
+  case s of
+    SexpAtom l _ -> l
+    SexpList l _ -> l
 
 -------------------------------------------------------------------------------
 -- Positioning of items in original source

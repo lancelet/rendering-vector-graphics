@@ -1,6 +1,7 @@
 module Main (main) where
 
 import qualified Bookit.Sexp.CharTest (tests)
+import qualified Bookit.Sexp.EncodeTest (tests)
 import qualified Bookit.Sexp.ParseTest (tests)
 import qualified Hedgehog
 import qualified Test.DocTest
@@ -26,6 +27,7 @@ runDocTests = do
 hedgehogTests :: [Hedgehog.Group]
 hedgehogTests =
   [ Bookit.Sexp.CharTest.tests,
+    Bookit.Sexp.EncodeTest.tests,
     Bookit.Sexp.ParseTest.tests
   ]
 

@@ -38,6 +38,7 @@ test-suite bookit-test
   main-is:        Test.hs
   other-modules:
     Bookit.Sexp.CharTest
+    Bookit.Sexp.EncodeTest
     Bookit.Sexp.ParseTest
     Bookit.Sexp.TypesTest
 
@@ -55,11 +56,14 @@ library
   exposed-modules:
     Bookit.Sexp
     Bookit.Sexp.Char
+    Bookit.Sexp.Encode
     Bookit.Sexp.Parse
     Bookit.Sexp.Ppr
     Bookit.Sexp.Types
 
   build-depends:
     , containers
+    , extra
     , megaparsec
+    , mtl
     , text
