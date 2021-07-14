@@ -3,15 +3,9 @@
 -- |
 module Bookit.Sexp.ParseTest (tests) where
 
-import Bookit.Sexp
-  ( Atom (AtomStr, AtomSym),
-    Loc (Loc),
-    Sexp (SexpAtom, SexpList),
-    SrcPos (SrcPos),
-    mkLoc,
-  )
 import qualified Bookit.Sexp.Parse as Parse
 import qualified Bookit.Sexp.Ppr as Ppr
+import Bookit.Sexp.Types (Atom (AtomSym), Loc, Sexp (..), mkLoc)
 import Bookit.Sexp.TypesTest (genAtom, genSexp, genStr, genSym)
 import Control.Monad.IO.Class (liftIO)
 import qualified Data.Text as Text
