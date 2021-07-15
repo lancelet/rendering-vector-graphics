@@ -1,7 +1,6 @@
 module Main (main) where
 
 import qualified Bookit.Sexp.CharTest (tests)
-import qualified Bookit.Sexp.EncodeTest (tests)
 import qualified Bookit.Sexp.ParseTest (tests)
 import qualified Hedgehog
 import qualified Test.DocTest
@@ -14,8 +13,7 @@ main = do
 runHedgehogTests :: IO ()
 runHedgehogTests = do
   putStrLn "\n---- Running Hedgehog Tests ----"
-  mapM_ Hedgehog.checkSequential hedgehogTests
-  -- mapM_ Hedgehog.checkParallel hedgehogTests
+  mapM_ Hedgehog.checkParallel hedgehogTests
   putStrLn "---- Completed Hedgehog Tests ----"
 
 runDocTests :: IO ()
@@ -27,7 +25,6 @@ runDocTests = do
 hedgehogTests :: [Hedgehog.Group]
 hedgehogTests =
   [ Bookit.Sexp.CharTest.tests,
-    Bookit.Sexp.EncodeTest.tests,
     Bookit.Sexp.ParseTest.tests
   ]
 
