@@ -32,6 +32,8 @@ docTests :: IO ()
 docTests =
   Test.DocTest.doctest
     [ "-isrc",
+      "src/Bookit/Math/Decode.hs",
+      "src/Bookit/Sexp.hs",
       "src/Bookit/Sexp/Char.hs",
       "src/Bookit/Sexp/Parse.hs",
       "src/Bookit/Sexp/Ppr.hs",

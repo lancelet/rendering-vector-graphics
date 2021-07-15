@@ -2,7 +2,10 @@
 
 -- | Parsers for S-expressions.
 module Bookit.Sexp.Parse
-  ( -- * Parsers
+  ( -- * Parse function
+    parseSexp,
+
+    -- * Parsers
     sexp,
     atom,
     str,
@@ -10,6 +13,7 @@ module Bookit.Sexp.Parse
   )
 where
 
+import Bookit.ErrMsg (ErrMsg (ErrMsg))
 import qualified Bookit.Sexp.Char as Char
 import Bookit.Sexp.Types
   ( Atom (AtomStr, AtomSym),
@@ -21,9 +25,19 @@ import Bookit.Sexp.Types
   )
 import Data.Functor (($>))
 import Data.Text (Text)
+import qualified Data.Text as Text
 import Data.Void (Void)
 import Text.Megaparsec ((<|>))
 import qualified Text.Megaparsec as MP
+
+-- | Parse an S-expression from 'Text'.
+parseSexp :: Text -> Either ErrMsg (Sexp Loc)
+parseSexp txt =
+  case MP.parse sexp "" txt of
+    Right result ->
+      Right result
+    Left errBundle ->
+      Left . ErrMsg . Text.pack . MP.errorBundlePretty $ errBundle
 
 -- | Parser type.
 --

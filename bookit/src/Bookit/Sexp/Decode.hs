@@ -4,18 +4,24 @@
 -- | Decoding S-expressions into types monadically.
 module Bookit.Sexp.Decode where
 
+import Bookit.ErrMsg (ErrMsg (ErrMsg))
 import Bookit.Sexp.Types
   ( Atom (AtomStr, AtomSym),
-    Loc,
+    Loc (Loc),
     Sexp (SexpAtom, SexpList),
-    Str,
-    Sym,
+    SrcPos (SrcPos),
+    Str (Str),
+    Sym (Sym),
+    loc,
   )
 import Control.Applicative (Alternative, empty, liftA2, (<|>))
 import Control.Monad.State.Strict (StateT (StateT))
 import qualified Control.Monad.State.Strict as State
 import Data.Set (Set)
 import qualified Data.Set as Set
+import Data.Text (Text)
+import qualified Data.Text as Text
+import Data.Word (Word32)
 
 -------------------------------------------------------------------------------
 -- Types
@@ -112,6 +118,11 @@ sexp = overrideExpected ExpectedSexp $
         State.put ys
         pure y
 
+nested :: Decoder a -> Decoder a
+nested decoder = do
+  s <- sexp
+  Decoder . State.lift $ runDecoder decoder s
+
 anySym :: Decoder Sym
 anySym = overrideExpected ExpectedAnySym $
   Decoder $ do
@@ -160,3 +171,84 @@ overrideExpected expected (Decoder d) =
       case State.runStateT d sexpList of
         result@(Success _) -> result
         Failure u _ -> Failure u (Set.singleton expected)
+
+-------------------------------------------------------------------------------
+
+{-
+prettyFailure :: Result a -> Either ErrMsg a
+prettyFailure result =
+  case result of
+    Success x -> Right x
+    Failure u es -> Left . ErrMsg $ "TODO"
+-}
+
+prettyFailure ::
+  -- | Original input to the parser (for error highlighting).
+  Text ->
+  -- | Outcome of parsing.
+  Result a ->
+  -- | Error message.
+  Either ErrMsg a
+prettyFailure txt result =
+  case result of
+    Success x -> Right x
+    Failure u es ->
+      Left . ErrMsg $
+        let c :: Int
+            c = fromIntegral . snd . rowCol $ u
+
+            row, col, lsp, lin, caret :: Text
+            row = Text.pack . show . fst . rowCol $ u
+            col = Text.pack . show . snd . rowCol $ u
+            lsp = Text.replicate (Text.length row) " "
+            lin = extractUnexpectedLine u
+            caret = Text.replicate (c - 1) " " <> "^"
+         in Text.unlines
+              [ row <> ":" <> col <> ":",
+                lsp <> " | ",
+                row <> " | " <> lin,
+                lsp <> " | " <> caret,
+                "unexpected " <> prettyUnexpected u,
+                "expecting " <> prettyExpected es
+              ]
+  where
+    rowCol :: Unexpected -> (Word32, Word32)
+    rowCol u =
+      case u of
+        UnexpectedEnd -> (fromIntegral (length txtLines), 1)
+        UnexpectedSexp se -> let Loc (SrcPos r c) _ = loc se in (r, c)
+
+    extractUnexpectedLine :: Unexpected -> Text
+    extractUnexpectedLine u =
+      case u of
+        UnexpectedEnd -> lastLine
+        UnexpectedSexp se -> extractLocLine . loc $ se
+
+    extractLocLine :: Loc -> Text
+    extractLocLine (Loc (SrcPos r _) _) = txtLines !! (fromIntegral r - 1)
+
+    lastLine :: Text
+    lastLine = last . Text.lines $ txt
+
+    txtLines :: [Text]
+    txtLines = Text.lines txt
+
+prettyUnexpected :: Unexpected -> Text
+prettyUnexpected u =
+  case u of
+    UnexpectedEnd -> "end of S-expression"
+    UnexpectedSexp (SexpAtom _ (AtomSym (Sym s))) -> "symbol " <> s
+    UnexpectedSexp (SexpAtom _ (AtomStr (Str s))) -> "string \"" <> s <> "\""
+    UnexpectedSexp (SexpList _ _) -> "s-expression"
+
+prettyExpected :: Set Expected -> Text
+prettyExpected es = Text.intercalate ", " $ ps <$> Set.toList es
+  where
+    ps :: Expected -> Text
+    ps e =
+      case e of
+        ExpectedSexp -> "s-expression"
+        ExpectedStr -> "string"
+        ExpectedSym (Sym s) -> "symbol " <> s
+        ExpectedAnySym -> "symbol"
+        ExpectedEnd -> "end of S-expression"

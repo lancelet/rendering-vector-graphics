@@ -18,6 +18,8 @@ module Bookit.Sexp
     Types.mkLoc,
 
     -- ** Parsing
+    parseDecode,
+    Parse.parseSexp,
     Parse.sexp,
 
     -- ** Pretty-printing
@@ -25,6 +27,15 @@ module Bookit.Sexp
   )
 where
 
+import Bookit.ErrMsg (ErrMsg)
+import Bookit.Sexp.Decode (Decoder)
+import qualified Bookit.Sexp.Decode as Decode
 import qualified Bookit.Sexp.Parse as Parse
 import qualified Bookit.Sexp.Ppr as Ppr
 import qualified Bookit.Sexp.Types as Types
+import Data.Text (Text)
+
+parseDecode :: Decoder a -> Text -> Either ErrMsg a
+parseDecode dec txt = do
+  s <- Parse.parseSexp txt
+  Decode.prettyFailure txt $ Decode.runDecoder dec s

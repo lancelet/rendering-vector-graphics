@@ -53,6 +53,7 @@ library
   hs-source-dirs:  src
   other-modules:
   exposed-modules:
+    Bookit.ErrMsg
     Bookit.Math.Decode
     Bookit.Math.Types
     Bookit.Sexp
