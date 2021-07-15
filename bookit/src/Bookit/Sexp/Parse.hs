@@ -171,10 +171,6 @@ str =
 sym :: Parser Sym
 sym = Sym <$> MP.takeWhile1P (Just "symbol") Char.isSym
 
--- | Parse whitespace.
-ws :: Parser Text
-ws = MP.takeWhile1P (Just "whitespace") Char.isWS
-
 -- | Parse optional whitespace.
 optWS :: Parser Text
 optWS = MP.takeWhileP (Just "optional whitespace") Char.isWS

@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
 -- | Decoding S-expressions into types monadically.
@@ -110,6 +111,14 @@ sexp = overrideExpected ExpectedSexp $
       y : ys -> do
         State.put ys
         pure y
+
+anySym :: Decoder Sym
+anySym = overrideExpected ExpectedAnySym $
+  Decoder $ do
+    s <- unDecoder sexp
+    case s of
+      SexpAtom _ (AtomSym sm) -> pure sm
+      x -> unDecoder $ errUnexpectedSexp x
 
 sym :: Sym -> Decoder Sym
 sym sm = overrideExpected (ExpectedSym sm) $
