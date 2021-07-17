@@ -42,7 +42,7 @@ define = sym "define" *> (Define <$> anySym <*> Decode.nested symbol <*> str)
 symbol :: Decoder Symbol
 symbol =
   (SymbolVector <$> vector)
-  <|> (SymbolScalar <$> scalar)
+    <|> (SymbolScalar <$> scalar)
 
 -- | Decoder for a scalar.
 --
